@@ -1,0 +1,70 @@
+name: Release MCP Server
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build and publish
+      run: |
+        dotnet publish -c Release --self-contained --runtime win-x64 -o publish/win-x64
+        dotnet publish -c Release --self-contained --runtime linux-x64 -o publish/linux-x64
+        dotnet publish -c Release --self-contained --runtime osx-x64 -o publish/osx-x64
+        
+    - name: Create release packages
+      run: |
+        cd publish
+        zip -r ../autotestid-mcp-server-win-x64.zip win-x64/
+        tar -czf ../autotestid-mcp-server-linux-x64.tar.gz linux-x64/
+        tar -czf ../autotestid-mcp-server-osx-x64.tar.gz osx-x64/
+        
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          autotestid-mcp-server-win-x64.zip
+          autotestid-mcp-server-linux-x64.tar.gz
+          autotestid-mcp-server-osx-x64.tar.gz
+          install.ps1
+        tag_name: ${{ github.ref }}
+        name: AutoTestID Workflow MCP Server ${{ github.ref_name }}
+        body: |
+          ## AutoTestID Workflow MCP Server Release ${{ github.ref_name }}
+          
+          ### 🚀 Quick Install
+          ```powershell
+          # Windows PowerShell
+          iwr -useb https://github.com/${{ github.repository }}/releases/latest/download/install.ps1 | iex
+          ```
+          
+          ### 📦 Manual Download
+          - **Windows**: autotestid-mcp-server-win-x64.zip
+          - **Linux**: autotestid-mcp-server-linux-x64.tar.gz
+          - **macOS**: autotestid-mcp-server-osx-x64.tar.gz
+          
+          ### 🔧 Features
+          - Comprehensive AutoTestID workflow for Angular/AngularJS applications
+          - Two-phase processing: strategy selection + implementation
+          - Enterprise-grade locator strategies (ARIA-first vs test-attribute-first)
+          - VS Code MCP integration with accessibility-first approach
+          - ARIA attributes OR data-testid (never both) following updated prompt guidelines
+          
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

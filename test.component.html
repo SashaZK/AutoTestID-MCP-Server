@@ -1,0 +1,63 @@
+<div class="weather-modal-overlay" *ngIf="open" (click)="onOverlayClick($event)">
+  <div class="weather-modal-content" (click)="$event.stopPropagation()" (wheel)="onModalWheel($event)">
+    <!-- Header -->
+    <div class="modal-header">
+      <span>Weather Conditions</span>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      <!-- Layer Table -->
+      <div class="weather-table">
+        <table>
+          <tr>
+            <th>
+              <input type="checkbox"
+                     [checked]="isLayerSectionEnabled"
+                     (change)="onLayerSectionToggle($event)">
+              <span>Layer</span>
+            </th>
+          </tr>
+          <tr *ngFor="let layersDescriptor of weatherLayers; let i = index" 
+              [class.disabled]="!isLayerSectionEnabled">
+            <td>
+              <input type="radio" 
+                     name="layerRadioGroup" 
+                     [value]="getLayerDescriptorId(layersDescriptor)" 
+                     [(ngModel)]="selectedLayerId"
+                     [disabled]="!isLayerSectionEnabled">
+              <span *ngIf="layersDescriptor.isSubLayer" class="sublayer">&#x2022;</span>
+              <span>{{layersDescriptor?.name}}</span>
+            </td>
+          </tr>
+        </table>
+      </div>
+      
+      <!-- Grid Table -->
+      <div class="weather-table">
+        <table>
+          <tr>
+            <th>
+              <input type="checkbox" 
+                     [checked]="isGridSectionEnabled"
+                     (change)="onGridSectionToggle($event)">
+              <span>Grid</span>
+            </th>
+          </tr>
+          <tr *ngFor="let gridDescriptor of weatherGrids; let i = index" 
+              [class.disabled]="!isGridSectionEnabled">
+            <td>
+              <input type="radio" 
+                     name="gridRadioGroup" 
+                     [value]="getGridDescriptorId(gridDescriptor)" 
+                     [(ngModel)]="selectedGridId"
+                     [disabled]="!isGridSectionEnabled">
+              <span *ngIf="gridDescriptor.isSubLayer" class="sublayer">&#x2022;</span>
+              <span>{{gridDescriptor?.name}}</span>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
