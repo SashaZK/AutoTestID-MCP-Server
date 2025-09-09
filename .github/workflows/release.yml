@@ -42,7 +42,7 @@ jobs:
           autotestid-mcp-server-linux-x64.tar.gz
           autotestid-mcp-server-osx-x64.tar.gz
           install.ps1
-        tag_name: ${{ github.ref }}
+        tag_name: ${{ github.ref_name }}
         name: AutoTestID Workflow MCP Server ${{ github.ref_name }}
         body: |
           ## AutoTestID Workflow MCP Server Release ${{ github.ref_name }}
